@@ -5,3 +5,5 @@
 \.vscode/
 
 *.xraw
+
+\.DS_Store
