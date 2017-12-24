@@ -7,3 +7,5 @@
 *.xraw
 
 \.DS_Store
+
+create_schema\.sql
