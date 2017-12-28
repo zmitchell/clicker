@@ -7,8 +7,5 @@ authors = ["Zach Mitchell <zmitchell@fastmail.com>"]
 serde = "1.0.24"
 serde_derive = "1.0.24"
 serde-xml-rs = "0.2.1"
-chrono = "^0.4.0"
 rusqlite = {version = "^0.13.0", features = ["chrono"]}
 postgres = {version = "^0.15.1", features = ["with-chrono"]}
-tql = { git = "https://github.com/antoyo/tql" }
-tql_macros = { git = "https://github.com/antoyo/tql" }
