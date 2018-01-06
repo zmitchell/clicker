@@ -9,3 +9,8 @@ serde_derive = "1.0.24"
 serde-xml-rs = "0.2.1"
 rusqlite = {version = "^0.13.0", features = ["chrono"]}
 postgres = {version = "^0.15.1", features = ["with-chrono"]}
+gtk = { version = "^0.3.0", features = ["v3_22"] }
+relm = {git = "https://github.com/antoyo/relm.git"}
+relm-derive = {git = "https://github.com/antoyo/relm.git"}
+relm-attributes = {git = "https://github.com/antoyo/relm.git"}
+

@@ -161,7 +161,7 @@ impl Gradebook {
         conn.execute("DROP TABLE section", &[]).unwrap();
     }
 
-    pub fn make_section(&self, name: &str) {
+    pub fn add_section(&self, name: &str) {
         &self.conn.execute("INSERT INTO section(name) VALUES ($1)", &[&name]).unwrap();
     }
 
@@ -180,7 +180,15 @@ impl Gradebook {
         sec
     }
 
-    pub fn make_recitation_from_week(&self, rec_week: i32) {
+    pub fn get_existing_sections(&self) -> Vec<String> {
+        let rows = &self.conn.query("SELECT * FROM section", &[]).unwrap();
+        let recs: Vec<String> = rows.iter().map(|rec| {
+            rec.get("name")
+        }).collect();
+        recs
+    }
+
+    pub fn add_recitation_by_week(&self, rec_week: i32) {
         &self.conn.execute("INSERT INTO recitation(week) VALUES ($1)", &[&rec_week]).unwrap();
     }
 
@@ -272,9 +280,9 @@ impl Gradebook {
     }
 
     pub fn create_recitation(&self) -> (i32, i32) {
-        self.make_recitation_from_week(1);
+        self.add_recitation_by_week(1);
         let rec_id = self.get_recitation_id_by_week(1);
-        self.make_section("R006");
+        self.add_section("R006");
         let sec_id = self.get_section_id_by_name("R006");
         let questions: Vec<QuestionInput> = vec!(
             QuestionInput {
