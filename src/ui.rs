@@ -91,6 +91,7 @@ impl Widget for Question {
             gtk::Label {
                 text: self.model.label.as_str(),
                 hexpand: true,
+                halign: gtk::Align::Start,
                 cell: {
                     left_attach: 0,
                     top_attach: 0,
@@ -102,6 +103,7 @@ impl Widget for Question {
                     left_attach: 2,
                     top_attach: 0
                 },
+                hexpand: true,
                 label: "A",
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::A, cbox.get_active()),
@@ -111,6 +113,7 @@ impl Widget for Question {
                     left_attach: 3,
                     top_attach: 0
                 },
+                hexpand: true,
                 label: "B",
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::B, cbox.get_active()),
@@ -120,6 +123,7 @@ impl Widget for Question {
                     left_attach: 4,
                     top_attach: 0
                 },
+                hexpand: true,
                 label: "C",
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::C, cbox.get_active()),
@@ -129,6 +133,7 @@ impl Widget for Question {
                     left_attach: 5,
                     top_attach: 0
                 },
+                hexpand: true,
                 label: "D",
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::D, cbox.get_active()),
@@ -138,6 +143,7 @@ impl Widget for Question {
                     left_attach: 6,
                     top_attach: 0
                 },
+                hexpand: true,
                 label: "E",
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::E, cbox.get_active()),
@@ -147,6 +153,7 @@ impl Widget for Question {
                     left_attach: 7,
                     top_attach: 0
                 },
+                hexpand: true,
                 label: "Any",
                 toggled(cbox) => CheckboxChanged(Checkbox::Any, cbox.get_active()),
             }
