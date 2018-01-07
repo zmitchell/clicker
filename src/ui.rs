@@ -34,6 +34,8 @@ pub enum AnswerChoice {
 pub enum QuestionMsg {
     CheckboxChanged(Checkbox, bool),
     UpdateChecked(u32, Checkbox, bool),
+    Clear,
+    Submit,
     SetLabel(String),
 }
 
@@ -51,14 +53,26 @@ pub struct QuestionGridModel {
 }
 
 
-pub struct ClickerModel {
-    // empty for now
-}
+// #[derive(Msg)]
+// pub enum SectionMsg {
+//     // empty for now
+// }
+
+
+// pub struct SectionModel {
+//     pub sections: Vec<String>,
+//     pub selected_for_removal: Option<String>,
+// }
 
 
 #[derive(Msg)]
 pub enum ClickerMsg {
     Quit,
+}
+
+
+pub struct ClickerModel {
+    // empty for now
 }
 
 
@@ -81,6 +95,15 @@ impl Widget for Question {
                     _ => {}
                 }
             },
+            Clear => {
+                self.model.any = false;
+                self.a.set_active(false);
+                self.b.set_active(false);
+                self.c.set_active(false);
+                self.d.set_active(false);
+                self.e.set_active(false);
+                self.any.set_active(false);
+            },
             SetLabel(text) => self.model.label = text,
             _ => {},
         }
@@ -98,6 +121,7 @@ impl Widget for Question {
                     width: 2,
                 }
             },
+            #[name="a"]
             gtk::CheckButton {  // A
                 cell: {
                     left_attach: 2,
@@ -108,6 +132,7 @@ impl Widget for Question {
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::A, cbox.get_active()),
             },
+            #[name="b"]
             gtk::CheckButton {  // B
                 cell: {
                     left_attach: 3,
@@ -118,6 +143,7 @@ impl Widget for Question {
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::B, cbox.get_active()),
             },
+            #[name="c"]
             gtk::CheckButton {  // C
                 cell: {
                     left_attach: 4,
@@ -128,6 +154,7 @@ impl Widget for Question {
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::C, cbox.get_active()),
             },
+            #[name="d"]
             gtk::CheckButton {  // D
                 cell: {
                     left_attach: 5,
@@ -138,6 +165,7 @@ impl Widget for Question {
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::D, cbox.get_active()),
             },
+            #[name="e"]
             gtk::CheckButton {  // E
                 cell: {
                     left_attach: 6,
@@ -148,6 +176,7 @@ impl Widget for Question {
                 sensitive: !self.model.any,
                 toggled(cbox) => CheckboxChanged(Checkbox::E, cbox.get_active()),
             },
+            #[name="any"]
             gtk::CheckButton {  // Any
                 cell: {
                     left_attach: 7,
@@ -183,11 +212,21 @@ impl Widget for QuestionGrid {
 
     fn update(&mut self, event: QuestionMsg) {
         match event {
+            Clear => {
+                self.model = QuestionGrid::blank_model();
+                self.q1.stream().emit(Clear);
+                self.q2.stream().emit(Clear);
+                self.q3.stream().emit(Clear);
+                self.q4.stream().emit(Clear);
+                self.q5.stream().emit(Clear);
+            }
             UpdateChecked(num, cbox, state) => {
                 self.model.checked.insert((num, cbox), state);
                 self.update_answers();
-                println!("{:?}", self.model.answers);
             },
+            Submit => {
+                // nothing for now
+            }
             _ => {},
         }
     }
@@ -228,28 +267,66 @@ impl Widget for QuestionGrid {
         self.model.answers = answers;
     }
 
+    fn blank_model() -> QuestionGridModel {
+        let mut checked = HashMap::new();
+        for i in 1..6 {
+            checked.insert((i, Checkbox::A), false);
+            checked.insert((i, Checkbox::B), false);
+            checked.insert((i, Checkbox::C), false);
+            checked.insert((i, Checkbox::D), false);
+            checked.insert((i, Checkbox::E), false);
+            checked.insert((i, Checkbox::Any), false);
+        }
+
+        QuestionGridModel {
+            checked: checked,
+            answers: Vec::new(),
+        }
+    }
+
     view! {
         gtk::Box {
             orientation: Orientation::Vertical,
+            #[name="q1"]
             Question {
                 SetLabel: String::from("Question 1"),
                 CheckboxChanged(ref choice, state) => UpdateChecked(1, choice.clone(), state),
             },
+            #[name="q2"]
             Question {
                 SetLabel: String::from("Question 2"),
                 CheckboxChanged(ref choice, state) => UpdateChecked(2, choice.clone(), state),
             },
+            #[name="q3"]
             Question {
                 SetLabel: String::from("Question 3"),
                 CheckboxChanged(ref choice, state) => UpdateChecked(3, choice.clone(), state),
             },
+            #[name="q4"]
             Question {
                 SetLabel: String::from("Question 4"),
                 CheckboxChanged(ref choice, state) => UpdateChecked(4, choice.clone(), state),
             },
+            #[name="q5"]
             Question {
                 SetLabel: String::from("Question 5"),
                 CheckboxChanged(ref choice, state) => UpdateChecked(5, choice.clone(), state),
+            },
+            gtk::Box {
+                orientation: Orientation::Horizontal,
+                margin_top: 5,
+                gtk::Button {
+                    label: "Clear",
+                    hexpand: true,
+                    halign: gtk::Align::End,
+                    margin_right: 10,
+                    clicked => Clear,
+                },
+                gtk::Button {
+                    label: "Submit",
+                    halign: gtk::Align::End,
+                    clicked => Submit,
+                }
             }
         }
     }
