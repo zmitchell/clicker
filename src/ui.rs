@@ -34,6 +34,7 @@ pub enum AnswerChoice {
 pub enum QuestionMsg {
     CheckboxChanged(Checkbox, bool),
     UpdateChecked(u32, Checkbox, bool),
+    LoadWeeks,
     Clear,
     Submit,
     SetLabel(String),
@@ -50,6 +51,7 @@ pub struct QuestionModel {
 pub struct QuestionGridModel {
     pub checked: HashMap<(u32, Checkbox), bool>,
     pub answers: Vec<Vec<AnswerChoice>>,
+    pub weeks_loaded: bool,
 }
 
 
@@ -207,6 +209,7 @@ impl Widget for QuestionGrid {
         QuestionGridModel {
             checked: checked,
             answers: Vec::new(),
+            weeks_loaded: false,
         }
     }
 
@@ -219,6 +222,7 @@ impl Widget for QuestionGrid {
                 self.q3.stream().emit(Clear);
                 self.q4.stream().emit(Clear);
                 self.q5.stream().emit(Clear);
+                self.week.remove_all();
             }
             UpdateChecked(num, cbox, state) => {
                 self.model.checked.insert((num, cbox), state);
@@ -226,7 +230,15 @@ impl Widget for QuestionGrid {
             },
             Submit => {
                 // nothing for now
-            }
+            },
+            LoadWeeks => {
+                if !self.model.weeks_loaded {
+                    self.week.append_text("1");
+                    self.week.append_text("2");
+                    self.week.append_text("3");
+                    self.model.weeks_loaded = true;
+                }
+            },
             _ => {},
         }
     }
@@ -281,12 +293,32 @@ impl Widget for QuestionGrid {
         QuestionGridModel {
             checked: checked,
             answers: Vec::new(),
+            weeks_loaded: false,
         }
     }
 
     view! {
         gtk::Box {
             orientation: Orientation::Vertical,
+            gtk::Label {
+                markup: "<big>Add Questions</big>",
+                margin_top: 10,
+                margin_bottom: 10,
+            },
+            gtk::Box {
+                orientation: Orientation::Horizontal,
+                margin_bottom: 10,
+                gtk::Label {
+                    text: "Week:",
+                    halign: gtk::Align::Start,
+                    margin_end: 15,
+                },
+                #[name="week"]
+                gtk::ComboBoxText {
+                    halign: gtk::Align::Start,
+                    draw(_, _) => (LoadWeeks, Inhibit(false)),
+                }
+            },
             #[name="q1"]
             Question {
                 SetLabel: String::from("Question 1"),
@@ -350,6 +382,7 @@ impl Widget for Application {
 
     view! {
         gtk::Window {
+            title: "Clicker",
             gtk::Box {
                 orientation: Orientation::Vertical,
                 margin_left: 5,
